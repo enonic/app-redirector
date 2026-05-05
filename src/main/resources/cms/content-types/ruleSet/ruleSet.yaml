@@ -1,0 +1,22 @@
+kind: "ContentType"
+superType: "base:folder"
+title: "Redirect Rule Set"
+description: "A container for managing groups of redirection rules"
+form:
+  - type: "TextLine"
+    name: "description"
+    label: "Description"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "Long"
+    name: "priority"
+    label: "Priority Index"
+    helpText: "Higher numbers take precedence if a path matches rules across multiple\
+      \ Rule Sets."
+    occurrences:
+      min: 0
+      max: 1
+    default: 10
+allowChildContentType:
+  - "${app}:rule"

@@ -1,0 +1,5 @@
+kind: "Application"
+title: "Redirector"
+description: "Manage URL redirection at scale"
+vendorName: "Acme Inc"
+vendorUrl: "https://example.com"
