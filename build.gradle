@@ -47,7 +47,7 @@ dependencies {
   // include 'com.enonic.lib:lib-cache:2.2.0'
 
   // https://market.enonic.com/vendors/enonic/http-client-lib
-  include 'com.enonic.lib:lib-http-client:3.2.2'
+  include 'com.enonic.lib:lib-http-client:4.0.0-SNAPSHOT'
 
   // https://market.enonic.com/vendors/enonic/mustache-lib
   // include 'com.enonic.lib:lib-mustache:2.1.1'
