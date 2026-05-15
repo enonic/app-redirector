@@ -44,19 +44,19 @@ dependencies {
   // ─────────────────────────────────────────────────────────────────────────
 
   // https://market.enonic.com/vendors/enonic/cache-lib
-  // include 'com.enonic.lib:lib-cache:2.2.0'
+  // include 'com.enonic.lib:lib-cache:3.0.0-SNAPSHOT'
 
   // https://market.enonic.com/vendors/enonic/http-client-lib
-  include 'com.enonic.lib:lib-http-client:3.2.2'
+  include 'com.enonic.lib:lib-http-client:4.0.0-SNAPSHOT'
 
   // https://market.enonic.com/vendors/enonic/mustache-lib
   // include 'com.enonic.lib:lib-mustache:2.1.1'
 
   // https://market.enonic.com/vendors/enonic/router-lib
-  // include 'com.enonic.lib:lib-router:3.1.0'
+  // include 'com.enonic.lib:lib-router:4.0.0-SNAPSHOT'
 
   // https://market.enonic.com/vendors/enonic/static-asset-lib
-  // include 'com.enonic.lib:lib-static:1.0.3'
+  // include 'com.enonic.lib:lib-static:3.0.0-SNAPSHOT'
 
   // https://market.enonic.com/vendors/enonic/text-encoding
   // include 'com.enonic.lib:lib-text-encoding:2.1.1'
@@ -68,7 +68,7 @@ dependencies {
 repositories {
   mavenLocal()
   mavenCentral()
-  xp.enonicRepo()
+  xp.enonicRepo('dev')
 }
 
 node {
