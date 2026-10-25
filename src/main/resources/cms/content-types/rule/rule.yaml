@@ -1,0 +1,121 @@
+kind: "ContentType"
+superType: "base:structured"
+allowChildContent: false
+title: "Redirect Rule"
+description: "A single redirection instruction"
+displayNameExpression: "${source.exact.path}${source.prefix.path}${source.regex.expression}\
+  \ ➔ [${statusCode}] ${target.relative.path}${target.external.url}"
+form:
+  - type: "OptionSet"
+    name: "source"
+    expanded: false
+    label: "Source"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "prefix"
+        label: "Prefix"
+        items:
+          - type: "TextLine"
+            name: "path"
+            label: "Path Prefix"
+            helpText: "Redirects this path and everything under it. e.g., /blog"
+            occurrences:
+              min: 1
+              max: 1
+            regexp: "^/.*"
+      - name: "exact"
+        label: "Exact Match"
+        items:
+          - type: "TextLine"
+            name: "path"
+            label: "Source Path"
+            helpText: "e.g., /old-landing-page/path"
+            occurrences:
+              min: 1
+              max: 1
+            regexp: "^/.*"
+      - name: "regex"
+        label: "Advanced (Regex)"
+        items:
+          - type: "TextLine"
+            name: "expression"
+            label: "Regular Expression"
+            helpText: "Apache-style regex. e.g., ^/products/(.*)$"
+            occurrences:
+              min: 1
+              max: 1
+    selection:
+      min: 0
+      max: 1
+  - type: "OptionSet"
+    name: "target"
+    expanded: false
+    label: "Target"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "reference"
+        label: "Content"
+        items:
+          - type: "ContentSelector"
+            name: "content"
+            label: "Target item"
+            helpText: "Always target this item if it is moved or renamed."
+            occurrences:
+              min: 0
+              max: 1
+            allowContentType:
+              - "^(?!(portal:fragment|portal:page-template|media:|com\\.enonic\\.app\\\
+                .redirector:)).*"
+            treeMode: true
+      - name: "relative"
+        label: "Relative Path"
+        items:
+          - type: "TextLine"
+            name: "path"
+            label: "Path"
+            helpText: "e.g. a relative path with placeholders like $1. Non-ASCII characters\
+              \ must be percent-encoded (e.g. ø → %C3%B8)."
+            occurrences:
+              min: 1
+              max: 1
+            regexp: "^/.*"
+      - name: "external"
+        label: "External URL"
+        items:
+          - type: "TextLine"
+            name: "url"
+            label: "URL"
+            helpText: "e.g., https://enonic.com/ with placeholders like $1. Non-ASCII\
+              \ characters must be percent-encoded (e.g. ø → %C3%B8)."
+            occurrences:
+              min: 1
+              max: 1
+            regexp: "^https?://.*"
+    selection:
+      min: 0
+      max: 1
+  - type: "ComboBox"
+    name: "statusCode"
+    label: "HTTP Status Code"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "301"
+        label: "301 - Permanent Redirect"
+      - value: "302"
+        label: "302 - Temporary Redirect"
+      - value: "410"
+        label: "410 - Content Gone"
+    default: "301"
+  - type: "TextArea"
+    name: "comment"
+    label: "Internal Note"
+    helpText: "Why was this redirect created?"
+    occurrences:
+      min: 0
+      max: 1

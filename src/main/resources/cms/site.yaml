@@ -1,0 +1,8 @@
+kind: "Site"
+mappings:
+  - controller: "/cms/content-types/rule/rule.js"
+    order: 50
+    match: "type:'com.enonic.app.redirector:rule'"
+  - controller: "/cms/content-types/ruleSet/ruleSet.js"
+    order: 50
+    match: "type:'com.enonic.app.redirector:ruleSet'"
