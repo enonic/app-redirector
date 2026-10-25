@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-An Enonic XP application based on TypeScript starter named `com.enonic.app.redirector`. Requires Enonic XP 7.16.1+. The project is a Gradle-based build that delegates to npm/tsup for TypeScript compilation.
+An Enonic XP application based on TypeScript starter named `com.enonic.app.redirector`. Requires Enonic XP 8.1.1+. The project is a Gradle-based build that delegates to npm/tsup for TypeScript compilation.
 
 ## Purpose
 
