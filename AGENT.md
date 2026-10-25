@@ -54,11 +54,11 @@ npm run check:types:assets # Client-side types
 
 The codebase compiles to two different targets:
 
-- **Server-side** (`src/main/resources/` except `assets/`): Compiled to **CommonJS, ES5** via tsup. Runs on Enonic XP's Nashorn engine. Has XP globals (`app`, `log`, `require`, `__`). External XP libraries (`/lib/xp/*`) are not bundled.
+- **Server-side** (`src/main/resources/` except `assets/`): Compiled to **CommonJS, ES2022** via tsup. Runs on Enonic XP's GraalJS engine (declared with `app { scriptEngine = 'GraalJS' }` in `build.gradle`). Has XP globals (`app`, `log`, `require`, `__`). External XP libraries (`/lib/xp/*`) are not bundled.
 - **Client-side** (`src/main/resources/assets/`): Compiled to **ESM, modern JS** via tsup. Runs in the browser. Minified in production, sourcemaps in production only.
 
 Each environment has its own `tsconfig.json`:
-- `src/main/resources/tsconfig.json` - server (ES5, no DOM libs)
+- `src/main/resources/tsconfig.json` - server (no DOM libs)
 - `src/main/resources/assets/tsconfig.json` - client (DOM libs)
 
 ### Build Pipeline
@@ -94,7 +94,7 @@ Module paths in tests are mapped via `moduleNameMapper` in `jest.config.ts`:
 
 ## Key Constraints
 
-- Server code must be CommonJS (no ES module syntax) targeting ES5 for Nashorn
+- Server code must be CommonJS (no ES module syntax); the bundle targets ES2022 for GraalJS. No ES module loading, no `async`/`await`, no Node.js APIs at runtime
 - XP library imports use absolute paths (e.g., `/lib/xp/content`) and are marked external in the bundler
 - Gradle downloads Node.js v22.15.1 automatically; no global Node install required
 - `processResources` excludes `.ts`, `.tsx`, and `.json` files from the JAR

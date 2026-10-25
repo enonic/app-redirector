@@ -75,7 +75,7 @@ export default function buildServerConfig(): Options {
     shims: false,
     splitting: true,
     sourcemap: false,
-    target: 'es5',
+    target: 'es2022',
     tsconfig: `${DIR_SRC}/tsconfig.json`,
   };
 }
