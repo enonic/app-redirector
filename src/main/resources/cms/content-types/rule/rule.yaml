@@ -4,7 +4,7 @@ allowChildContent: false
 title: "Redirect Rule"
 description: "A single redirection instruction"
 displayNameExpression: "${source.exact.path}${source.prefix.path}${source.regex.expression}\
-  \ ➔ [${statusCode}] ${target.relative.path}${target.external.url}"
+  \ ➔ ${target.relative.path}${target.external.url} [${statusCode}]"
 form:
   - type: "OptionSet"
     name: "source"
