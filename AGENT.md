@@ -19,7 +19,7 @@ Target features:
 * Preview that demonstrates rule resolving and end-result
 * Custom validator that checks rule on save (to avoid loops / conflicts)
 * Ability for front-end developers to test rules in "draft" mode (before publishing)
-* Support recursive collections. Global vs local collections
+* Global vs local collections
 * Optional dynamic rule creation when content is moved (TBD)
 * Sites may optionally specify target rule collection
 
