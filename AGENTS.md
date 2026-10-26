@@ -21,7 +21,11 @@ Target features:
 * Ability for front-end developers to test rules in "draft" mode (before publishing)
 * Global vs local collections
 * Optional dynamic rule creation when content is moved (TBD)
-* Sites may optionally specify target rule collection
+* Sites and projects may select their rule set explicitly: a `ContentSelector` (restricted to `${app}:ruleSet`) in the app
+  config form in `cms/cms.yaml`, read by the resolver with `getSiteConfig` / the project's `siteConfig`. Planned resolution
+  order: `ruleSet` argument, site config, `${site}/_redirects`, project config, `/_redirects`, else `null`. Sharing across
+  sites works within one project; across projects use layers (an inherited rule set), since content references never cross
+  repositories
 
 ## Build system
 
@@ -134,7 +138,9 @@ Under `src/main/resources/`:
   The tester form posts back to `req.contextPath` and carries Content Studio's query parameters as hidden fields.
 - `lib/tester.ts` - HTML rendering for the two testers; `lib/redirector.ts` - matching and trace logic shared by the
   testers and the Guillotine extension
-- `guillotine/guillotine.ts` - Guillotine extension adding the `redirect` field
+- `guillotine/guillotine.ts` - Guillotine extension adding the `redirect` field. Rule set resolution: the `ruleSet` argument,
+  else `${site}/_redirects` for the nearest site of `localContext.scopeKey` (Guillotine 9; absent or `/` means project root),
+  else `/_redirects`. Any failure in the lookup is logged and returns `null`
 - `admin/tools/`, `admin/widgets/`, `tasks/`, `services/`, `error/`, `i18n/` - empty placeholders
 - `assets/` - client-side code (separate build target, empty)
 
