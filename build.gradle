@@ -30,20 +30,21 @@ dependencies {
   // include xplibs.repo
   // include xplibs.scheduler
   // include xplibs.schema
+  // include xplibs.sse
   // include xplibs.task
   // include xplibs.value
   // include xplibs.vhost
   // include xplibs.websocket
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Libraries from the Enonic Market ( https://market.enonic.com/libraries )
+  // Libraries from the Enonic Market (versions in gradle/libs.versions.toml)
   // ─────────────────────────────────────────────────────────────────────────
 
   // https://market.enonic.com/vendors/enonic/cache-lib
   // include 'com.enonic.lib:lib-cache:2.2.0'
 
   // https://market.enonic.com/vendors/enonic/http-client-lib
-  include 'com.enonic.lib:lib-http-client:4.0.1'
+  include libs.http.client
 
   // https://market.enonic.com/vendors/enonic/mustache-lib
   // include 'com.enonic.lib:lib-mustache:2.1.1'
@@ -76,7 +77,7 @@ node {
 
   // Version of node to download and install (only used if download is true)
   // It will be unpacked in the workDir
-  version = '22.15.1'
+  version = '24.20.0'
 }
 
 processResources {
@@ -96,7 +97,7 @@ tasks.register('npmBuild', NpmTask) {
   environment = [
     'FORCE_COLOR': 'true',
     'LOG_LEVEL_FROM_GRADLE': gradle.startParameter.logLevel.toString(),
-    'NODE_ENV': project.hasProperty('dev') || project.hasProperty('development') ? 'development' : 'production'
+    'NODE_ENV': project.findProperty('env') == 'dev' ? 'development' : 'production'
   ]
   inputs.dir 'src/main/resources'
   outputs.dir 'build/resources/main'
