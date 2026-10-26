@@ -1,6 +1,6 @@
 kind: "AdminExtension"
-title: "Redirect tester"
-description: "Tests a redirect rule or rule set against a path and traces the resulting redirect chain"
+title: "Redirector"
+description: "Test a redirect rule or rule set against a path"
 interfaces:
   - "contentstudio.liveview"
 allow:
