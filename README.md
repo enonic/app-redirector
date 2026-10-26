@@ -134,6 +134,6 @@ export async function middleware(request: NextRequest) {
 
 ## 5. Editor Preview & Tracing
 
-While the API handles production traffic, the app also includes a built-in **Redirect Tracer** inside Content Studio. When editors click "Preview" on a Rule, the app simulates the routing engine. 
+While the API handles production traffic, the app also includes a built-in **Redirect Tracer** inside Content Studio, provided as a Live View extension ("Redirect tester"). It is selected automatically in the preview pane whenever a Rule or RuleSet is selected or edited, at the project root as well as inside a site, and lets editors enter a path to test. 
 
 It traces up to 10 hops, evaluating both internal rule chains and external HTTP responses, warning the editor immediately if they have created an infinite redirection loop. For internal previews, the app automatically extracts the `baseUrl` from the nearest Portal App `siteConfig`.

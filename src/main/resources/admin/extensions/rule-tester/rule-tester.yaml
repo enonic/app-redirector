@@ -1,0 +1,11 @@
+kind: "AdminExtension"
+title: "Redirect tester"
+description: "Tests a redirect rule or rule set against a path and traces the resulting redirect chain"
+interfaces:
+  - "contentstudio.liveview"
+allow:
+  - "role:system.authenticated"
+config:
+  auto: "true"
+  order: "60"
+  allowContentType: "com.enonic.app.redirector:*"

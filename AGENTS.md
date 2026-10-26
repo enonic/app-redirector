@@ -125,10 +125,15 @@ wildcard; together with `.vscode/settings.json` this makes auto-import suggest t
 
 Under `src/main/resources/`:
 - `enonic.yaml` - application descriptor
-- `cms/site.yaml` - site mappings (the rule and rule set previews, at `order: 10` so they beat other apps' catch-all
-  preview mappings inside a site), `cms/cms.yaml` - CMS descriptor
-- `cms/content-types/rule/`, `cms/content-types/ruleSet/` - the two content types with their preview controllers
-- `lib/redirector.ts` - matching and trace logic shared by previews and the Guillotine extension
+- `cms/cms.yaml` - CMS descriptor; there is no `site.yaml`, the app has no site mappings
+- `cms/content-types/rule/`, `cms/content-types/ruleSet/` - the two content types (descriptors only)
+- `admin/extensions/rule-tester/` - Content Studio Live View extension (`contentstudio.liveview`, `auto: "true"`,
+  `order: "60"`, `allowContentType: "com.enonic.app.redirector:*"`) that renders the Rule and RuleSet testers in the
+  preview pane. `HEAD` answers the Automatic-mode probe (200 for the two types, 418 otherwise); `GET` loads the content
+  with `lib-content` inside a `lib-context` run for the `repo`/`branch` parameters and renders via `lib/tester.ts`.
+  The tester form posts back to `req.contextPath` and carries Content Studio's query parameters as hidden fields.
+- `lib/tester.ts` - HTML rendering for the two testers; `lib/redirector.ts` - matching and trace logic shared by the
+  testers and the Guillotine extension
 - `guillotine/guillotine.ts` - Guillotine extension adding the `redirect` field
 - `admin/tools/`, `admin/widgets/`, `tasks/`, `services/`, `error/`, `i18n/` - empty placeholders
 - `assets/` - client-side code (separate build target, empty)
