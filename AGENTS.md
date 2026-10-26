@@ -138,7 +138,9 @@ Under `src/main/resources/`:
   The tester form posts back to `req.contextPath` and carries Content Studio's query parameters as hidden fields.
 - `lib/tester.ts` - HTML rendering for the two testers; `lib/redirector.ts` - matching and trace logic shared by the
   testers and the Guillotine extension
-- `guillotine/guillotine.ts` - Guillotine extension adding the `redirect` field. Rule set resolution: the `ruleSet` argument,
+- `guillotine/guillotine.ts` - Guillotine extension adding the `redirect` field, returning a `RedirectResult` with
+  `statusCode`, exactly one of `external` / `path` / `content` (a `Content`, URL via `pageUrl`), the matching `rule`, and a
+  legacy `url` string. The incoming query string is the client's to forward. Rule set resolution: the `ruleSet` argument,
   else `${site}/_redirects` for the nearest site of `localContext.scopeKey` (Guillotine 9; absent or `/` means project root),
   else `/_redirects`. Any failure in the lookup is logged and returns `null`
 - `admin/tools/`, `admin/widgets/`, `tasks/`, `services/`, `error/`, `i18n/` - empty placeholders

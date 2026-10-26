@@ -23,34 +23,53 @@ The app extends the standard Enonic Guillotine API with a dedicated `redirect` f
 
 ```graphql
 query EvaluateRedirect($path: String!, $ruleSet: String) {
-  guillotine {
+  guillotine(project: "myproject", branch: "master", scopeKey: "/my-site") {
     redirect(path: $path, ruleSet: $ruleSet) {
-      url
       statusCode
+      external
+      path
+      content { _path pageUrl { path baseUrl } }
+      rule { displayName }
     }
   }
 }
 ```
 
+The endpoint is Guillotine's: `/api/com.enonic.app.guillotine:graphql` on the XP web port. `project` and `branch` select the
+content; `scopeKey` selects the site whose rules apply (see Auto-Discovery).
+
 ### Arguments
 
 | Argument | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `path` | `String!` | **Yes** | The incoming request path you want to evaluate (e.g., `/old-blog-post`). |
-| `ruleSet` | `String` | No | The ID (`_id`) or Path (`_path`) of a specific RuleSet to evaluate against. |
+| `path` | `String!` | **Yes** | The incoming request path to evaluate (e.g., `/old-blog-post`). Pass the path only; the query string is the client's to forward. |
+| `ruleSet` | `String` | No | The ID (`_id`) or Path (`_path`) of a specific RuleSet to evaluate against. Overrides Auto-Discovery. |
 
 ### The Response
 
-If a matching rule is found, the API returns the resolved destination and the HTTP status code. If no rules match the provided path, the API returns `null`.
+`null` when no rule matches. Otherwise a `RedirectResult` with the status code and **exactly one** of three target fields,
+mirroring the three target types editors can choose:
 
-**Match Found:**
+| Field | Set for | Description |
+| :--- | :--- | :--- |
+| `statusCode` | all | `301`, `302` or `410` |
+| `external` | External URL targets | Absolute URL, `$n` placeholders substituted |
+| `path` | Relative Path targets | Relative path, `$n` placeholders substituted. Mount it where your front end serves the site. |
+| `content` | Content targets | The target content. Build its URL like any other content, e.g. `pageUrl { path baseUrl }`, so headless and site-engine deployments both get the right address. |
+| `rule` | all | The rule that matched, for debugging and tooling |
+| `url` | all | Legacy single string: `external`, `path`, or the content's `_path`, with the incoming query string appended when `path` included one. Prefer the structured fields. |
+
+**Match Found (content target):**
 ```json
 {
   "data": {
     "guillotine": {
       "redirect": {
-        "url": "/new-marketing-campaign",
-        "statusCode": 301
+        "statusCode": 301,
+        "external": null,
+        "path": null,
+        "content": { "_path": "/my-site/new-marketing-campaign", "pageUrl": { "path": "/new-marketing-campaign", "baseUrl": "https://www.example.com" } },
+        "rule": { "displayName": "/old-campaign ➔ [301]" }
       }
     }
   }
@@ -74,10 +93,12 @@ If a matching rule is found, the API returns the resolved destination and the HT
 
 If you omit the `ruleSet` argument in your GraphQL query, the API utilizes an **Auto-Discovery** fallback. This is highly recommended for standard XP8 setups as it allows the CMS structure to dictate the routing context without frontend configuration changes.
 
-When `ruleSet` is null, the resolver looks for a RuleSet specifically named **`_redirects`**:
+When `ruleSet` is null, the resolver looks for a RuleSet named **`_redirects`**, using the same rule as Guillotine's `${site}` placeholder:
 
-1.  **Nearest Site Context:** It first checks if the current execution context belongs to a Site (`portal:site`). If so, it looks for a RuleSet named `_redirects` directly under that Site.
-2.  **Project Root:** If no site context is found (or the site lacks a `_redirects` RuleSet), it falls back to the absolute root of the current project and looks for `_redirects` there.
+1.  **Nearest Site:** If `scopeKey` names a site, or content inside a site, the RuleSet at `<site>/_redirects` is used.
+2.  **Project Root:** Without `scopeKey` (or with `/`), for content outside any site, or when the site has no `_redirects`, the RuleSet at `/_redirects` is used.
+
+A lookup that fails, for example because the caller may not read the branch, returns `null` and is logged on the server.
 
 ---
 
@@ -85,7 +106,7 @@ When `ruleSet` is null, the resolver looks for a RuleSet specifically named **`_
 
 Because Enonic XP acts as a headless CMS, **your frontend application is responsible for executing the actual HTTP redirect.** The API only returns the *intent*.
 
-Furthermore, the API returns internal targets as relative paths (e.g., `/about-us`). The frontend is responsible for appending these to the correct Base URL if absolute URLs are required by your framework.
+Path targets come back as the editor wrote them; content targets come back as content, and `pageUrl { path baseUrl }` gives the address for the selected scope the same way it does for any other content. Forward the incoming query string yourself if your redirects should keep it.
 
 ### Example: Next.js Middleware (`middleware.ts`)
 
@@ -103,8 +124,13 @@ export async function middleware(request: NextRequest) {
     body: JSON.stringify({
       query: `
         query ($path: String!) {
-          guillotine {
-            redirect(path: $path) { url statusCode }
+          guillotine(project: "myproject", branch: "master", scopeKey: "/my-site") {
+            redirect(path: $path) {
+              statusCode
+              external
+              path
+              content { pageUrl { path } }
+            }
           }
         }
       `,
@@ -117,11 +143,14 @@ export async function middleware(request: NextRequest) {
 
   // 2. Execute the Redirect if a match is found
   if (redirectRule) {
-    // Handle external vs internal target formatting
-    const targetUrl = redirectRule.url.startsWith('http') 
-      ? redirectRule.url 
-      : new URL(redirectRule.url, request.nextUrl.origin);
-
+    if (redirectRule.statusCode === 410) {
+      return new NextResponse(null, { status: 410 });
+    }
+    const target = redirectRule.external
+      ?? redirectRule.path
+      ?? redirectRule.content?.pageUrl.path;
+    const targetUrl = new URL(target, request.nextUrl.origin);
+    targetUrl.search = request.nextUrl.search; // forward the incoming query string
     return NextResponse.redirect(targetUrl, redirectRule.statusCode);
   }
 
